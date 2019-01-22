@@ -5255,6 +5255,7 @@ function YouTubeGetID(url){
 
 		jQuery.ArcGISObjectView.prototype.createObject = function() {
       queryVars = scalarapi.getQueryVars(this.model.path);
+      console.log(this.model.path);
       if (queryVars.webscene != null) {
         this.mediaObject = $('<div class="mediaObject" id="arcgis'+me.model.id+'"></div>').appendTo(this.parentView.mediaContainer);
         require([
@@ -5279,13 +5280,20 @@ function YouTubeGetID(url){
               pos = a[0].split(',');
               ht = a[1].split(',');
               properties.camera = {
-                position: pos,
+                position: {
+                  latitude: pos[0],
+                  longitude: pos[1],
+                  z: pos[2]
+                },
                 heading: ht[0],
                 tilt: ht[1]
               }
+              if (pos.length == 4) {
+                properties.camera.position.spatialReference = { wkid: pos[3] };
+              }
             }
           }
-          var view = new SceneView(properties);
+          me.sceneView = new SceneView(properties);
           /*view.when(function() {
             var slides = scene.presentation.slides;
             slides.forEach(function(slide, i) {
