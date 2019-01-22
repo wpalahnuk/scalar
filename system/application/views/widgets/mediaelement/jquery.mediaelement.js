@@ -245,6 +245,7 @@ function YouTubeGetID(url){
 		this.seek = function(data) {
 			// if the data has a url property, then we assume it's an annotation node that could represent
 			// either a temporal or a spatial annotation
+      console.log('seek?');
 			if ( data != null ) {
 				if (data.properties) {
 					this.view.seek(data);
@@ -1142,8 +1143,10 @@ function YouTubeGetID(url){
 						case '3D':
 						if (player == 'Threejs') {
 							this.mediaObjectView = new $.ThreejsObjectView(this.model, this);
-						} else if (this.model.mediaSource.name = 'ArcGIS WebScene') {
+						} else if (this.model.mediaSource.name == 'ArcGIS WebScene') {
               this.mediaObjectView = new $.ArcGISObjectView(this.model, this);
+            } else if (this.model.mediaSource.name == 'Unity WebGL') {
+              this.mediaObjectView = new $.UnityWebGLObjectView(this.model, this);
             }
 						break;
 
@@ -1914,6 +1917,10 @@ function YouTubeGetID(url){
  				this.lastSeekTime = annotation.properties.start;
 				handleTimer();
  				break;
+
+        case '3D':
+ 				this.mediaObjectView.seek(annotation.properties.start);
+        break;
 
  				case 'image':
  				this.showSpatialAnnotation(annotation);
@@ -5317,6 +5324,69 @@ function YouTubeGetID(url){
 		jQuery.ArcGISObjectView.prototype.resize = function(width, height) {
       $('#arcgis'+me.model.id).width(Math.round(width));
 			$('#arcgis'+me.model.id).height(Math.round(height));
+		}
+
+	}
+
+	/**
+	 * View for rendered HTML content.
+	 * @constructor
+	 *
+	 * @param {Object} model		Instance of the model.
+	 * @param {Object} parentView	Primary view for the media element.
+	 */
+	jQuery.UnityWebGLObjectView = function(model, parentView) {
+
+		var me = this;
+
+		this.model = model;  					// instance of the model
+		this.parentView = parentView;   		// primary view for the media element
+		this.hasFrameLoaded = false;			// has the iframe loaded yet?
+		this.isLiquid = true;					// media will expand to fill available space
+
+		/**
+		 * Creates the video media object.
+		 */
+		jQuery.UnityWebGLObjectView.prototype.createObject = function() {
+
+			var approot = $('link#approot').attr('href');
+			this.frameId = 'html'+this.model.filename+'_'+this.model.id;
+			var obj = $('<div class="mediaObject" style="overflow: hidden"><div><iframe style="width: 100%; height: 100%;" id="'+this.frameId+'" src="'+this.model.path.replace('%23unityweb','')+'" frameborder="0"></iframe></div></div>').appendTo(this.parentView.mediaContainer);
+			this.frame = obj.find('#'+this.frameId)[0];
+
+			$(this.frame).bind("load", function () {
+			   	me.hasFrameLoaded = true;
+          me.receiver = this.contentWindow;
+			});
+
+			this.parentView.layoutMediaObject();
+			this.parentView.removeLoadingMessage();
+
+			$(this.parentView.mediaContainer).parent().find('#viewPageLink').show();
+
+			return;
+		}
+
+		// These functions are basically irrelevant for this type of media
+		jQuery.UnityWebGLObjectView.prototype.play = function() { }
+		jQuery.UnityWebGLObjectView.prototype.pause = function() { }
+		jQuery.UnityWebGLObjectView.prototype.getCurrentTime = function() { }
+		jQuery.UnityWebGLObjectView.prototype.isPlaying = function(value, player_id) { return null; }
+
+    jQuery.UnityWebGLObjectView.prototype.seek = function(time) {
+      console.log('seek to '+time);
+      this.receiver.postMessage('0,0,-2,10,20,60', this.model.path);
+    }
+
+		/**
+		 * Resizes the media to the specified dimensions.
+		 *
+		 * @param {Number} width		The new width of the media.
+		 * @param {Number} height		The new height of the media.
+		 */
+		jQuery.UnityWebGLObjectView.prototype.resize = function(width, height) {
+			$('#'+this.frameId).parent().width(width);
+			$('#'+this.frameId).parent().height(height);
 		}
 
 	}

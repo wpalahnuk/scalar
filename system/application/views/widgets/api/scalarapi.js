@@ -591,6 +591,20 @@ function ScalarAPI() {
 				'Android': {extensions:prismSrcExt, format:'PlainText', player:'native', specifiesDimensions:false},
 				'Other': {extensions:prismSrcExt, format:'PlainText', player:'native', specifiesDimensions:false}
 			}},
+		'Unity WebGL': {
+			name:'Unity WebGL',
+			extensions:[],
+			isProprietary:true,
+			contentType:'3D',
+			browserSupport: {
+				'Mozilla': {extensions:[], format:'', player:'proprietary', specifiesDimensions:false},
+				'Explorer': {extensions:[], format:'', player:'proprietary', specifiesDimensions:false},
+				'MobileSafari': {extensions:[], format:'', player:'proprietary', specifiesDimensions:false},
+				'Safari': {extensions:[], format:'', player:'proprietary', specifiesDimensions:false},
+				'Chrome': {extensions:[], format:'', player:'proprietary', specifiesDimensions:false},
+				'Android': {extensions:[], format:'', player:'proprietary', specifiesDimensions:false},
+				'Other': {extensions:[], format:'', player:'proprietary', specifiesDimensions:false}
+			}},
 		'Unsupported': {
 			name:'Unsupported',
 			extensions:[],
@@ -808,6 +822,9 @@ ScalarAPI.prototype.parseMediaSource = function(uri) {
 
 		} else if (uri.indexOf('arcgis.com') != -1 && uri.indexOf('webscene') != -1) {
 			source = this.mediaSources['ArcGIS WebScene'];
+
+		} else if (decodeURIComponent(uri).indexOf('#unityweb') != -1) {
+			source = this.mediaSources['Unity WebGL'];
 
 		} else if (uri.indexOf('prezi.com') != -1) {
 			source = this.mediaSources['Prezi'];

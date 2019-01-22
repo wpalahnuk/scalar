@@ -230,6 +230,7 @@ $(document).ready(function() {
 					case "html":
 					case "text":
 					case "document":
+					case "3D":
 						var str = '<div class="form-inline"><div class="form-group"><label>Start line&nbsp; <input class="form-control" type="text" style="width:75px;" name="annotation_of_start_line_num" value="" /></label></div>';
 						str += ' <label>End line&nbsp; <input class="form-control" type="text" style="width:75px;" name="annotation_of_end_line_num" value="" /></label></div></div>';
 						str += '<input type="hidden" name="annotation_of_start_seconds" value="" />';
