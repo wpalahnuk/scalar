@@ -1919,7 +1919,10 @@ function YouTubeGetID(url){
  				break;
 
         case '3D':
- 				this.mediaObjectView.seek(annotation.properties.start);
+ 				this.mediaObjectView.seek(annotation.body.current.auxProperties['dcterms:spatial'][0]);
+        if (me.model.isChromeless || ('nav_bar' != me.model.options.header)) {
+          $('body').trigger('show_annotation', [annotation, me]);
+        }
         break;
 
  				case 'image':
@@ -5317,9 +5320,26 @@ function YouTubeGetID(url){
 		// These functions are basically irrelevant for this type of media
 		jQuery.ArcGISObjectView.prototype.play = function() { }
 		jQuery.ArcGISObjectView.prototype.pause = function() { }
-		jQuery.ArcGISObjectView.prototype.seek = function(time) { }
 		jQuery.ArcGISObjectView.prototype.getCurrentTime = function() { }
 		jQuery.ArcGISObjectView.prototype.isPlaying = function(value, player_id) { return null; }
+
+    jQuery.ArcGISObjectView.prototype.seek = function(transform) {
+      console.log('seek to '+transform);
+      var pos = transform.split(',');
+      console.log(pos);
+      var properties = {};
+      properties.camera = {
+        position: {
+          latitude: pos[0],
+          longitude: pos[1],
+          z: pos[2]
+        },
+        heading: pos[3],
+        tilt: pos[4]
+      }
+      console.log(this.sceneView.camera);
+      this.sceneView.camera = properties;
+    }
 
 		jQuery.ArcGISObjectView.prototype.resize = function(width, height) {
       $('#arcgis'+me.model.id).width(Math.round(width));
@@ -5373,9 +5393,9 @@ function YouTubeGetID(url){
 		jQuery.UnityWebGLObjectView.prototype.getCurrentTime = function() { }
 		jQuery.UnityWebGLObjectView.prototype.isPlaying = function(value, player_id) { return null; }
 
-    jQuery.UnityWebGLObjectView.prototype.seek = function(time) {
-      console.log('seek to '+time);
-      this.receiver.postMessage('0,0,-2,10,20,60', this.model.path);
+    jQuery.UnityWebGLObjectView.prototype.seek = function(transform) {
+      console.log('seek to '+transform);
+      this.receiver.postMessage(transform, this.model.path);
     }
 
 		/**

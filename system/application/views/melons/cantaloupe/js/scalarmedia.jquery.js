@@ -79,7 +79,6 @@
 									// only clicks on the background should cue up the annotation
 									if ( $( event.target ).is( 'td,h4,div,p,tr' ) ) {
 										var relation = $(this).data('relation');
-                    console.log('seek '+relation);
 										$(this).data('media').seek(relation);
 										if (( relation.target.current.mediaSource.contentType != 'document' ) && ( relation.target.current.mediaSource.contentType != 'image' ) && ( relation.target.current.mediaSource.contentType != '3D' )) {
 						       				setTimeout(function() {
@@ -95,13 +94,11 @@
 
 							// otherwise, update the list of all annotations
 							} else {
-
 								$(annotationTable).find('tr').removeClass('current');
 								$(annotationTable).find('tr').each(function() {
 
 									var rowRelation = $(this).data('relation');
 									var col = $(this).find('td').eq(1);
-
 
 									if ( rowRelation != null ) {
 
@@ -444,16 +441,14 @@
 						// only clicks on the background should cue up the annotation
 						if ( $( event.target ).is( 'td,h4,div,p,tr' ) ) {
 							var relation = $(this).data('relation');
-              console.log(relation);
-              console.log($(this).data('media'));
 							$(this).data('media').seek(relation);
 							var me = this;
 							if (( relation.target.current.mediaSource.contentType != 'document' ) && ( relation.target.current.mediaSource.contentType != 'image' ) && ( relation.target.current.mediaSource.contentType != '3D' )) {
-	              				setTimeout(function() {
-	                				if(!$(me).data('media').is_playing()) {
-	      								$(me).data('media').play();
-	                				}
-	              				},250);
+        				setTimeout(function() {
+          				if(!$(me).data('media').is_playing()) {
+								$(me).data('media').play();
+          				}
+        				},250);
 							}
 						}
 
