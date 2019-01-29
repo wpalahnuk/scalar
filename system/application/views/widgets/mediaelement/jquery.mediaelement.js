@@ -245,7 +245,6 @@ function YouTubeGetID(url){
 		this.seek = function(data) {
 			// if the data has a url property, then we assume it's an annotation node that could represent
 			// either a temporal or a spatial annotation
-      console.log('seek?');
 			if ( data != null ) {
 				if (data.properties) {
 					this.view.seek(data);
@@ -5265,7 +5264,6 @@ function YouTubeGetID(url){
 
 		jQuery.ArcGISObjectView.prototype.createObject = function() {
       queryVars = scalarapi.getQueryVars(this.model.path);
-      console.log(this.model.path);
       if (queryVars.webscene != null) {
         this.mediaObject = $('<div class="mediaObject" id="arcgis'+me.model.id+'"></div>').appendTo(this.parentView.mediaContainer);
         require([
@@ -5273,8 +5271,9 @@ function YouTubeGetID(url){
           "esri/WebScene",
           "esri/views/ui/DefaultUI",
           "esri/views/SceneView",
+          "esri/Camera",
           "esri/webscene/InitialViewProperties"
-        ], function(Map, WebScene, DefaultUI, SceneView, InitialViewProperties) {
+        ], function(Map, WebScene, DefaultUI, SceneView, Camera, InitialViewProperties) {
           var scene = new WebScene({
             portalItem: {
               id: queryVars.webscene
@@ -5303,6 +5302,7 @@ function YouTubeGetID(url){
               }
             }
           }
+          me.camera = new Camera();
           me.sceneView = new SceneView(properties);
           /*view.when(function() {
             var slides = scene.presentation.slides;
@@ -5326,19 +5326,14 @@ function YouTubeGetID(url){
     jQuery.ArcGISObjectView.prototype.seek = function(transform) {
       console.log('seek to '+transform);
       var pos = transform.split(',');
-      console.log(pos);
-      var properties = {};
-      properties.camera = {
-        position: {
-          latitude: pos[0],
-          longitude: pos[1],
-          z: pos[2]
-        },
-        heading: pos[3],
-        tilt: pos[4]
+      this.camera.position = {
+        latitude: parseFloat(pos[1]),
+        longitude: parseFloat(pos[0]),
+        z: parseFloat(pos[2])
       }
-      console.log(this.sceneView.camera);
-      this.sceneView.camera = properties;
+      this.camera.heading = parseFloat(pos[3]);
+      this.camera.tilt = parseFloat(pos[4]);
+      this.sceneView.goTo(this.camera);
     }
 
 		jQuery.ArcGISObjectView.prototype.resize = function(width, height) {
